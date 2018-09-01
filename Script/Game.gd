@@ -1,7 +1,13 @@
 extends Node
 
+var Helper=preload("Helper.gd")
+
 var Entity=preload("Entity.gd")
 var Gobelin=preload("Gobelin.gd")
+
+var PotionDeVie=preload("ItemPotionVie.gd")
+
+var Armure=preload("ItemArmure.gd")
 
 var hero=Entity.new("Héro", 10, 0.65, 3, 4)
 var mob
@@ -22,6 +28,9 @@ var hero_key1=false
 var hero_key2=false
 var hero_key3=false
 
+var items
+var treasure
+
 func addLine():
 	for i in range(labels.size()-1, 0, -1):
 		labels[i].text=labels[i-1].text
@@ -30,42 +39,34 @@ func addLine():
 func addText(s):
 	labels[0].text+=s
 
-func writeMobName():
-	addText(mob.name+"("+str(mob.pv)+")")
-
 func apparation():
 	mob=Gobelin.new()
 	addText("Un "+mob.name+" apparait !")
 
-func writeHeroName():
-	addText(hero.name+"("+str(hero.pv)+")")
-
-func writeDamage(e):
-	addText(" inflige "+str(e.fr)+" dégat(s).")
+func writeDamage(i):
+      	addText(" inflige "+str(i)+" dégat(s).")
 
 func checkIni():
 	if hero.ini<mob.ini:
-		writeHeroName()
+		addText(hero.name())
 		heroTurn=true
 	else:
-		writeMobName()
+		addText(mob.name())
 		heroTurn=false
 	addText(" attaque en premier.")
 
 func mobAttack():
-	writeMobName()
+	addText(mob.name())
 	if mob.testAttack():
-		writeDamage(mob)
-		hero.pv-=mob.fr
+		writeDamage(hero.remPv(mob.fr))
 	else:
 		addText(" rate son attaque.")
 	mob_doAttack=true
 
 func heroAttack():
-	writeHeroName()
+	addText(hero.name())
 	if hero.testAttack():
-		writeDamage(hero)
-		mob.pv-=hero.fr
+		writeDamage(mob.remPv(hero.fr))
 	else:
 		addText(" rate son attaque.")
 	hero_doAttack=true
@@ -82,11 +83,14 @@ func setKeys(b0, b1, b2, b3):
 	hero_key2=b2
 	hero_key3=b3
 
+func newTreasure():
+	treasure=items[Helper.rand_between(0, items.size()-1)].new()
+
 func todo():
 	match state:
 		0:
 			addLine()
-			addText("--- "+hero.name+" ouvre une porte.")
+			addText("--- "+hero.name()+" ouvre une porte.")
 			state+=1
 		1:
 			addLine()
@@ -130,24 +134,53 @@ func todo():
 			state-=3
 		7:
 			addLine()
-			addText("-- "+hero.name+" trouve un trésor.")
+			addText("-- "+hero.name+" a trouvé un trésor.")
 			state+=2
 		8:
 			addLine()
 			addText("Fin de la partie, merci d'avoir jouer !")
 		9:
 			addLine()
-			addText("C'est une potion de vie !")
+			newTreasure()
 
-			aide_setText("A. Utiliser Z. Equiper E. Prendre R. Laisser")
+			addText("C'est ")
+
+			if treasure.genre:
+				addText("un ")
+			else:
+				addText("une ")
+
+			addText(treasure.name()+" !")
+
+			if treasure.equip:
+				aide_setText("A. Equiper ")
+			else:
+				aide_setText("A. Utiliser ")
+
+			aide_addText("Z. Laisser")
+
 			hero_press=true
-			setKeys(true, true, true, true)
+			setKeys(true, true, false, false)
 
 			state+=1
 		10:
 			if !hero_key0:
 				addLine()
-				addText(hero.name+" utilise potion de vie.")
+				treasure.use(hero)
+
+				addText(hero.name)
+
+				if treasure.equip:
+					addText(" equipe ")
+				else:
+					addText(" utilise ")
+
+				addText(treasure.name()+".")
+
+				treasure=null
+			elif !hero_key1:
+				addLine()
+				addText(hero.name+" continu son chemin.")
 
 			mob_doAttack=false
 			hero_doAttack=false
@@ -156,9 +189,11 @@ func todo():
 func _ready():
 	randomize()
 
+	items=[PotionDeVie, Armure]
+
 	labels=[$Label10, $Label9, $Label8, $Label7, $Label6, $Label5, $Label4, $Label3, $Label2, $Label]
 
-	addText("--- "+hero.name+" ouvre une porte.")
+	addText("--- "+hero.name()+" ouvre une porte.")
 	state=1
 
 func _process(delta):
@@ -170,6 +205,11 @@ func _process(delta):
 	else:
 		if hero_key0 and Input.is_action_just_pressed("MyKey_0"):
 			hero_key0=false
+			todo()
+			aide_setText("")
+			hero_press=false
+		elif hero_key1 and Input.is_action_just_pressed("MyKey_1"):
+			hero_key1=false
 			todo()
 			aide_setText("")
 			hero_press=false
