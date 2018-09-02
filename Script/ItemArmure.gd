@@ -2,16 +2,16 @@ extends "Item.gd"
 
 var arm=0
 
-func _init().("Armure", false):
+func _init(i).("Armure", false):
 	equip=true
-	arm=1
+	arm=Helper.rand_between(1, i)
 	pass
 
 func use(e):
 	e.arm=arm
 
-func unuse(e):
-	e.arm=0
-
-func name():
-	return name+"("+str(arm)+")"
+func name(i):
+	i=arm-i
+	if i>0:
+		return name+"(+"+str(i)+")"
+	return name+"("+str(i)+")"

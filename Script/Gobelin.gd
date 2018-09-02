@@ -1,4 +1,6 @@
 extends "Entity.gd"
 
-func _init().("Gobelin", 5, 0.5, 2, 2):
+func _init(i).("Gobelin", 2, 2):
+	degMax=i
+	degMin=Helper.rand_between(1, degMax)
 	pass

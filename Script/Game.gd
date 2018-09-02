@@ -1,15 +1,13 @@
 extends Node
 
-var Helper=preload("Helper.gd")
-
 var Entity=preload("Entity.gd")
 var Gobelin=preload("Gobelin.gd")
 
 var PotionDeVie=preload("ItemPotionVie.gd")
-
 var Armure=preload("ItemArmure.gd")
+var Epee=preload("ItemEpee.gd")
 
-var hero=Entity.new("Héro", 10, 0.65, 3, 4)
+var hero=Entity.new("Héro", 10, 5)
 var mob
 
 var labels
@@ -31,6 +29,8 @@ var hero_key3=false
 var items
 var treasure
 
+var lvl=1
+
 func addLine():
 	for i in range(labels.size()-1, 0, -1):
 		labels[i].text=labels[i-1].text
@@ -40,7 +40,7 @@ func addText(s):
 	labels[0].text+=s
 
 func apparation():
-	mob=Gobelin.new()
+	mob=Gobelin.new(lvl)
 	addText("Un "+mob.name+" apparait !")
 
 func writeDamage(i):
@@ -55,20 +55,19 @@ func checkIni():
 		heroTurn=false
 	addText(" attaque en premier.")
 
-func mobAttack():
-	addText(mob.name())
-	if mob.testAttack():
-		writeDamage(hero.remPv(mob.fr))
+func doAttack(e, e1):
+	addText(e.name())
+	if e.testAttack():
+		writeDamage(e1.remPv( e.attack() ))
 	else:
 		addText(" rate son attaque.")
+
+func mobAttack():
+	doAttack(mob, hero)
 	mob_doAttack=true
 
 func heroAttack():
-	addText(hero.name())
-	if hero.testAttack():
-		writeDamage(mob.remPv(hero.fr))
-	else:
-		addText(" rate son attaque.")
+	doAttack(hero, mob)
 	hero_doAttack=true
 
 func aide_addText(s):
@@ -84,13 +83,13 @@ func setKeys(b0, b1, b2, b3):
 	hero_key3=b3
 
 func newTreasure():
-	treasure=items[Helper.rand_between(0, items.size()-1)].new()
+	treasure=items[Helper.rand_between(0, items.size()-1)].new(lvl)
 
 func todo():
 	match state:
 		0:
 			addLine()
-			addText("--- "+hero.name()+" ouvre une porte.")
+			addText("--- "+hero.name()+" ouvre une porte("+str(lvl)+").")
 			state+=1
 		1:
 			addLine()
@@ -145,19 +144,28 @@ func todo():
 
 			addText("C'est ")
 
-			if treasure.genre:
-				addText("un ")
+			if treasure is Armure:
+				addText("une "+treasure.name(hero.arm)+" !")
+
+				aide_setText("A. Equiper Z. Laisser")
+			elif treasure is Epee:
+				addText("une "+treasure.name(hero.degMin, hero.degMax)+" !")
+
+				aide_setText("A. Equiper Z. Laisser")
 			else:
-				addText("une ")
+				if treasure.genre:
+					addText("un ")
+				else:
+					addText("une ")
 
-			addText(treasure.name()+" !")
+				addText(treasure.name()+" !")
 
-			if treasure.equip:
-				aide_setText("A. Equiper ")
-			else:
-				aide_setText("A. Utiliser ")
+				if treasure.equip:
+					aide_setText("A. Equiper ")
+				else:
+					aide_setText("A. Utiliser ")
 
-			aide_addText("Z. Laisser")
+				aide_addText("Z. Laisser")
 
 			hero_press=true
 			setKeys(true, true, false, false)
@@ -171,11 +179,9 @@ func todo():
 				addText(hero.name)
 
 				if treasure.equip:
-					addText(" equipe ")
+					addText(" s'en equipe.")
 				else:
-					addText(" utilise ")
-
-				addText(treasure.name()+".")
+					addText(" l'utilise.")
 
 				treasure=null
 			elif !hero_key1:
@@ -184,12 +190,13 @@ func todo():
 
 			mob_doAttack=false
 			hero_doAttack=false
+			lvl+=1
 			state=0
 
 func _ready():
 	randomize()
 
-	items=[PotionDeVie, Armure]
+	items=[PotionDeVie, Armure, Epee]
 
 	labels=[$Label10, $Label9, $Label8, $Label7, $Label6, $Label5, $Label4, $Label3, $Label2, $Label]
 

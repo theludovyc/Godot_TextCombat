@@ -14,6 +14,10 @@ config/name="TextCombat"
 run/main_scene="res://Scene/Game.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Helper="*res://Script/Helper.gd"
+
 [display]
 
 window/size/width=565

@@ -5,19 +5,19 @@ var pv=0
 var pvMax=0
 
 #capacite de combat
-var cc=0.0
+var cc=0.5
 
 #capacite de tir
-var ct=0.0
+var ct=0.5
 
 #force
-var fr=0
+var fr=1
 
 #agilite
-var ag=0
+var ag=1
 
 #intel
-var it=0
+var it=1
 
 #initiative
 var ini=0
@@ -25,12 +25,13 @@ var ini=0
 #armure
 var arm=0
 
-func _init(s, i, f, i1, i2):
+var degMin=1
+var degMax=1
+
+func _init(s, i, i2):
 	name=s
 	pvMax=i
 	pv=i
-	cc=f
-	fr=i1
 	ini=i2
 
 func testAttack():
@@ -38,8 +39,16 @@ func testAttack():
 		return true
 	return false
 
+func attack():
+	return Helper.rand_between(degMin, degMax)
+
 func setToPvMax():
 	pv=pvMax
+
+func addPv(i):
+	pv+=i
+	if pv>pvMax:
+		pv=pvMax
 
 func remPv(i):
 	if arm>0:
