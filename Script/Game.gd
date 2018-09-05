@@ -75,11 +75,28 @@ func mobAttack():
 	doAttack(mob, hero)
 	mob_doAttack=true
 
-func heroAttack():
-	doAttack(hero, mob)
+func activeDef():
+	hero.cc+=0.1
+	hero_def=true
 
-	if hero_key0 and !hero_key1:
-		hero_def=true
+func disableDef():
+	hero.cc-=0.1
+	hero_def=false
+
+func heroAttack():
+	addText(hero.name())
+	if hero.testAttack():
+		var damage=hero.attack()
+		if !hero_key2:
+			damage*=2
+		writeDamage(mob.remPv( damage ))
+	else:
+		addText(" rate son attaque.")
+
+	if !hero_key1:
+		activeDef()
+	else:
+		disableDef()
 
 	hero_doAttack=true
 
@@ -123,7 +140,7 @@ func todo():
 
 					if hero_def and hero.testAttack():
 						addText("mais "+hero.name+" se défend !")
-						hero_def=false
+						disableDef()
 					else:
 						addText("et ")
 						writeDamage(hero.remPv( mob.attack() ))
@@ -135,16 +152,16 @@ func todo():
 					addText(" rate son attaque.")
 
 				heroTurn=true
-				aide_setText("A. Atk Z. Atk+Def")
+				aide_setText("A. Atk Z. Atk+Def, E. Atk++")
 				hero_press=true
-				setKeys(true, true, false, false)
+				setKeys(true, true, true, false)
 			else:
 				heroAttack()
 				heroTurn=false
 
 				if mob.pv<=0:
 					if hero_def:
-						hero_def=false
+						disableDef()
 					state+=1
 					return
 
@@ -166,7 +183,7 @@ func todo():
 		6:
 			addLine()
 			addText(hero.name+" prépare sa défense.")
-			
+
 			if mob_doAttack:
 				state+=1
 				return
@@ -255,6 +272,11 @@ func _process(delta):
 			hero_press=false
 		elif hero_key1 and Input.is_action_just_pressed("MyKey_1"):
 			hero_key1=false
+			todo()
+			aide_setText("")
+			hero_press=false
+		elif hero_key2 and Input.is_action_just_pressed("MyKey_2"):
+			hero_key2=false
 			todo()
 			aide_setText("")
 			hero_press=false
