@@ -9,5 +9,5 @@ func _init(i).("Potion de Vie", false):
 func use(e):
 	e.addPv(pv)
 
-func name():
+func name(e):
 	return name+"("+str(pv)+")"

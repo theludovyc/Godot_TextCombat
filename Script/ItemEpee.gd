@@ -12,12 +12,11 @@ func _init(i).("Epee", false):
 		degMin=Helper.rand_between(1, degMax)
 
 func use(e):
-	e.degMin=degMin
-	e.degMax=degMax
+	e.setDegMinMax(degMin, degMax)
 
-func name(i, i1):
-	i=degMin-i
-	i1=degMax-i1
+func name(e):
+	var i=degMin-e.degMin
+	var i1=degMax-e.degMax
 
 	var s=name+"("
 

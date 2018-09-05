@@ -31,6 +31,8 @@ var treasure
 
 var lvl=1
 
+var hero_def=false
+
 func addLine():
 	for i in range(labels.size()-1, 0, -1):
 		labels[i].text=labels[i-1].text
@@ -44,7 +46,7 @@ func apparation():
 	addText("Un "+mob.name+" apparait !")
 
 func writeDamage(i):
-      	addText(" inflige "+str(i)+" dégat(s).")
+	addText(" inflige "+str(i)+" dégat(s).")
 
 func checkIni():
 	if hero.ini<mob.ini:
@@ -62,12 +64,23 @@ func doAttack(e, e1):
 	else:
 		addText(" rate son attaque.")
 
+func doHugeAttack(e, e1):
+	addText(e.name())
+	if e.testAttack():
+		writeDamage(e1.remPv( e.attack()*2 ))
+	else:
+		addText(" rate son attaque.")
+
 func mobAttack():
 	doAttack(mob, hero)
 	mob_doAttack=true
 
 func heroAttack():
 	doAttack(hero, mob)
+
+	if hero_key0 and !hero_key1:
+		hero_def=true
+
 	hero_doAttack=true
 
 func aide_addText(s):
@@ -102,76 +115,101 @@ func todo():
 		3:
 			addLine()
 			if !heroTurn:
-				mobAttack()
+				mob_doAttack=true
+
+				addText(mob.name())
+				if mob.testAttack():
+					addText(" attaque, ")
+
+					if hero_def and hero.testAttack():
+						addText("mais "+hero.name+" se défend !")
+						hero_def=false
+					else:
+						addText("et ")
+						writeDamage(hero.remPv( mob.attack() ))
+
+						if hero.pv<1:
+							state+=2
+							return
+				else:
+					addText(" rate son attaque.")
+
 				heroTurn=true
-				aide_setText("A. Atk++ Z. Atk+Esq E. Atk+Prd")
+				aide_setText("A. Atk Z. Atk+Def")
 				hero_press=true
-				setKeys(true, true, true, false)
+				setKeys(true, true, false, false)
 			else:
 				heroAttack()
 				heroTurn=false
 
-			if mob.pv<=0:
-				state+=1
-			elif hero.pv<=0:
-				state+=2
-			elif mob_doAttack and hero_doAttack:
-				state+=3
+				if mob.pv<=0:
+					if hero_def:
+						hero_def=false
+					state+=1
+					return
+
+				if hero_def:
+					state+=3
+					return
+
+			if mob_doAttack and hero_doAttack:
+				state+=4
 		4:
 			addLine()
 			addText(mob.name+" est mort.")
-			state+=3
+			state+=4
 		5:
 			addLine()
 			addText(hero.name+" est mort.")
-			state+=3
+			state+=4
+
 		6:
+			addLine()
+			addText(hero.name+" prépare sa défense.")
+			
+			if mob_doAttack:
+				state+=1
+				return
+			
+			state-=3
+		7:
 			addLine()
 			mob_doAttack=false
 			hero_doAttack=false
 			addText("- Nouveau tour")
-			state-=3
-		7:
-			addLine()
-			addText("-- "+hero.name+" a trouvé un trésor.")
-			state+=2
+			state-=4
 		8:
 			addLine()
-			addText("Fin de la partie, merci d'avoir jouer !")
+			addText("-- "+hero.name()+" a trouvé un trésor.")
+			state+=2
 		9:
+			addLine()
+			addText("Fin de la partie, merci d'avoir jouer !")
+		10:
 			addLine()
 			newTreasure()
 
 			addText("C'est ")
 
-			if treasure is Armure:
-				addText("une "+treasure.name(hero.arm)+" !")
-
-				aide_setText("A. Equiper Z. Laisser")
-			elif treasure is Epee:
-				addText("une "+treasure.name(hero.degMin, hero.degMax)+" !")
-
-				aide_setText("A. Equiper Z. Laisser")
+			if treasure.genre:
+				addText("un ")
 			else:
-				if treasure.genre:
-					addText("un ")
-				else:
-					addText("une ")
+				addText("une ")
 
-				addText(treasure.name()+" !")
+			addText(treasure.name(hero)+" !")
 
-				if treasure.equip:
-					aide_setText("A. Equiper ")
-				else:
-					aide_setText("A. Utiliser ")
+			if treasure.equip:
+				aide_setText("A. Equiper ")
+			else:
+				aide_setText("A. Utiliser ")
 
-				aide_addText("Z. Laisser")
+			aide_addText("Z. Laisser")
 
 			hero_press=true
 			setKeys(true, true, false, false)
 
 			state+=1
-		10:
+		11:
 			if !hero_key0:
 				addLine()
 				treasure.use(hero)

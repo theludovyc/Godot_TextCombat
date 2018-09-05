@@ -11,5 +11,5 @@ func _init(s, b):
 func use(e):
 	pass
 
-func name():
+func name(e):
 	return name

@@ -10,8 +10,8 @@ func _init(i).("Armure", false):
 func use(e):
 	e.arm=arm
 
-func name(i):
-	i=arm-i
+func name(e):
+	var i=arm-e.arm
 	if i>0:
 		return name+"(+"+str(i)+")"
 	return name+"("+str(i)+")"
