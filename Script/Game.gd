@@ -1,13 +1,15 @@
 extends Node
 
-var Entity=preload("Entity.gd")
+var EntityPlayer=preload("EntityPlayer.gd")
 var Gobelin=preload("Gobelin.gd")
 
-var PotionDeVie=preload("ItemPotionVie.gd")
-var Armure=preload("ItemArmure.gd")
-var Epee=preload("ItemEpee.gd")
+var items=[preload("ItemPotionVie.gd"), 
+preload("ItemArmure.gd"),
+preload("ItemEpee.gd"),
+preload("ItemCeinture.gd"),
+preload("ItemBotte.gd")]
 
-var hero=Entity.new("Héro", 10, 5)
+var hero=EntityPlayer.new("Héro")
 var mob
 
 var labels
@@ -26,12 +28,14 @@ var hero_key1=false
 var hero_key2=false
 var hero_key3=false
 
-var items
 var treasure
 
 var lvl=1
 
 var hero_def=false
+
+#chance
+var ch=1
 
 func addLine():
 	for i in range(labels.size()-1, 0, -1):
@@ -83,23 +87,6 @@ func disableDef():
 	hero.cc-=0.1
 	hero_def=false
 
-func heroAttack():
-	addText(hero.name())
-	if hero.testAttack():
-		var damage=hero.attack()
-		if !hero_key2:
-			damage*=2
-		writeDamage(mob.remPv( damage ))
-	else:
-		addText(" rate son attaque.")
-
-	if !hero_key1:
-		activeDef()
-	else:
-		disableDef()
-
-	hero_doAttack=true
-
 func aide_addText(s):
 	$Label11.text+=s
 
@@ -119,6 +106,9 @@ func todo():
 	match state:
 		0:
 			addLine()
+
+			hero.pvMax+=1
+
 			addText("--- "+hero.name()+" ouvre une porte("+str(lvl)+").")
 			state+=1
 		1:
@@ -138,10 +128,16 @@ func todo():
 				if mob.testAttack():
 					addText(" attaque, ")
 
-					if hero_def and hero.testAttack():
-						addText("mais "+hero.name+" se défend !")
+					var b=true
+
+					if hero_def:
+						if hero.testAttack():
+							addText("mais "+hero.name+" se défend !")
+							b=false
+
 						disableDef()
-					else:
+					
+					if b:
 						addText("et ")
 						writeDamage(hero.remPv( mob.attack() ))
 
@@ -149,6 +145,9 @@ func todo():
 							state+=2
 							return
 				else:
+					if hero_def:
+						disableDef()
+
 					addText(" rate son attaque.")
 
 				heroTurn=true
@@ -156,16 +155,29 @@ func todo():
 				hero_press=true
 				setKeys(true, true, true, false)
 			else:
-				heroAttack()
+				hero_doAttack=true
+				
+				addText(hero.name())
+				if hero.testAttack():
+					var damage=hero.attack()
+
+					if !hero_key2:
+						damage*=2
+
+					writeDamage(mob.remPv( damage ))
+
+					if mob.pv<=0:
+						if hero_def:
+							disableDef()
+						state+=1
+						return
+				else:
+					addText(" rate son attaque.")
+
 				heroTurn=false
 
-				if mob.pv<=0:
-					if hero_def:
-						disableDef()
-					state+=1
-					return
-
-				if hero_def:
+				if !hero_key1:
+					activeDef()
 					state+=3
 					return
 
@@ -250,8 +262,6 @@ func todo():
 
 func _ready():
 	randomize()
-
-	items=[PotionDeVie, Armure, Epee]
 
 	labels=[$Label10, $Label9, $Label8, $Label7, $Label6, $Label5, $Label4, $Label3, $Label2, $Label]
 

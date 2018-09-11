@@ -1,8 +1,12 @@
 extends "Entity.gd"
 
 func _init(i).("Gobelin", 2, 2):
-	cc=0.25
+	cc=int(i/10)/10.0+0.1
 
 	degMax=i
-	degMin=Helper.rand_between(1, degMax)
+	if i>3:
+		degMin=degMax-3
+		return
+	
+	degMin=1
 	pass

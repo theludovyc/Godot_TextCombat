@@ -1,17 +1,10 @@
-extends "Item.gd"
+extends "ItemEquipe.gd"
 
-var arm=0
-
-func _init(i).("Armure", false):
-	equip=true
-	arm=Helper.rand_between(1, i)
+func _init(i).(i, "Armure", false):
 	pass
 
 func use(e):
-	e.arm=arm
+	e.arm=carac
 
-func name(e):
-	var i=arm-e.arm
-	if i>0:
-		return name+"(+"+str(i)+")"
-	return name+"("+str(i)+")"
+func checkCarac(e):
+	return carac-e.arm
