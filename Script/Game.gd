@@ -7,7 +7,8 @@ var items=[preload("ItemPotionVie.gd"),
 preload("ItemArmure.gd"),
 preload("ItemEpee.gd"),
 preload("ItemCeinture.gd"),
-preload("ItemBotte.gd")]
+preload("ItemBotte.gd"),
+preload("ItemAnneau.gd")]
 
 var hero=EntityPlayer.new("Héro")
 var mob
@@ -33,9 +34,6 @@ var treasure
 var lvl=1
 
 var hero_def=false
-
-#chance
-var ch=1
 
 func addLine():
 	for i in range(labels.size()-1, 0, -1):
@@ -100,7 +98,7 @@ func setKeys(b0, b1, b2, b3):
 	hero_key3=b3
 
 func newTreasure():
-	treasure=items[Helper.rand_between(0, items.size()-1)].new(lvl)
+	treasure=items[Helper.rand_between(0, items.size()-1)].new(hero.ch, lvl)
 
 func todo():
 	match state:
@@ -151,7 +149,7 @@ func todo():
 					addText(" rate son attaque.")
 
 				heroTurn=true
-				aide_setText("A. Atk Z. Atk+Def, E. Atk++")
+				aide_setText("A. Atk Z. Atk++, E. Atk+Def")
 				hero_press=true
 				setKeys(true, true, true, false)
 			else:
@@ -161,7 +159,7 @@ func todo():
 				if hero.testAttack():
 					var damage=hero.attack()
 
-					if !hero_key2:
+					if !hero_key1:
 						damage*=2
 
 					writeDamage(mob.remPv( damage ))
@@ -176,7 +174,7 @@ func todo():
 
 				heroTurn=false
 
-				if !hero_key1:
+				if !hero_key2:
 					activeDef()
 					state+=3
 					return

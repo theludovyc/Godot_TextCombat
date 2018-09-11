@@ -11,6 +11,9 @@ var it=1
 
 var cc_bonus=0.0
 
+#chance
+var ch=1
+
 func reset_cc_bonus():
 	cc_bonus=(1-cc)*(ag/100.0)
 

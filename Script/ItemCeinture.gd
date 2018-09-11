@@ -1,10 +1,10 @@
 extends "ItemEquipe.gd"
 
-func _init(i).(i, "Ceinture", false):
+func _init(i, i1).(i, i1, "Ceinture", false):
 	pass
 
 func use(e):
-	e.setForce(carac)
+	e.setForce(item_var)
 
 func checkCarac(e):
-	return carac-e.fr
+	return item_var-e.fr

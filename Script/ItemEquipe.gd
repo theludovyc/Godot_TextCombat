@@ -1,10 +1,7 @@
 extends "Item.gd"
 
-var carac=0
-
-func _init(i, s, b).(s, b):
+func _init(i, i1, s, b).(i, i1, s, b):
 	equip=true
-	carac=Helper.rand_between(1, i)
 
 func checkCarac(e):
 	pass

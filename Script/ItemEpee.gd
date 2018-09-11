@@ -1,31 +1,30 @@
 extends "Item.gd"
 
 var degMin=0
-var degMax=0
 
-func _init(i).("Epee", false):
+func _init(i, i1).(i, i1, "Epee", false):
 	equip=true
-	degMax=Helper.rand_between(1, i)
-	if degMax==1:
+
+	if item_var==1:
 		degMin=1
 	else:
-		degMin=Helper.rand_between(1, degMax)
+		degMin=Helper.rand_between(i, item_var)
 
 func use(e):
-	e.setDegMinMax(degMin, degMax)
+	e.setDegMinMax(degMin, item_var)
 
 func name(e):
-	var i=degMin-e.degMin
-	var i1=degMax-e.degMax
+	var j=degMin-e.degMin
+	var j1=item_var-e.degMax
 
 	var s=name+"("
 
-	if i>0:
+	if j>0:
 		s+="+"
 
-	s+=str(i)+", "
+	s+=str(j)+", "
 
-	if i1>0:
+	if j1>0:
 		s+="+"
 
-	return s+str(i1)+")"
+	return s+str(j1)+")"

@@ -1,13 +1,10 @@
 extends "Item.gd"
 
-var pv=0
-
-func _init(i).("Potion de Vie", false):
-	pv=Helper.rand_between(1, 9)
+func _init(i, i1).(i, i1, "Potion de Vie", false):
 	pass
 
 func use(e):
-	e.addPv(pv)
+	e.addPv(item_var)
 
 func name(e):
-	return name+"("+str(pv)+")"
+	return name+"("+str(item_var)+")"
