@@ -98,7 +98,7 @@ func testAttack():
 
 	var f=randf()
 
-	print(f, " / ", i)
+	#print(f, " / ", i)
 
 	if i>=1 or f<=i:
 		return true

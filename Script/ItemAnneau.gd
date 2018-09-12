@@ -1,6 +1,6 @@
 extends "ItemEquipe.gd"
 
-func _init(i, i1).(i, i1, "Anneau", true):
+func _init(i).(i, "Anneau", true):
 	pass
 
 func use(e):

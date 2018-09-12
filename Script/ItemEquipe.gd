@@ -1,6 +1,6 @@
 extends "Item.gd"
 
-func _init(i, i1, s, b).(i, i1, s, b):
+func _init(i, s, b).(i, s, b):
 	equip=true
 
 func checkCarac(e):
