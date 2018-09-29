@@ -2,6 +2,7 @@ extends Node
 
 var EntityPlayer=preload("EntityPlayer.gd")
 var Gobelin=preload("Gobelin.gd")
+var Boss=preload("EntityBoss.gd")
 
 var items=[preload("ItemPotionVie.gd"), 
 preload("ItemArmure.gd"),
@@ -34,6 +35,9 @@ var lvl=1
 
 var hero_def=false
 
+var hero_restore_ed=false
+var mob_restore_ed=false
+
 func addLine():
 	for i in range(labels.size()-1, 0, -1):
 		labels[i].text=labels[i-1].text
@@ -43,7 +47,14 @@ func addText(s):
 	labels[0].text+=s
 
 func apparation():
-	mob=Gobelin.new(lvl)
+	if(lvl%10==0):
+		mob=Boss.new(lvl)
+	else:
+		mob=Gobelin.new(lvl)
+
+	if mob.arm>=hero.degMax:
+		mob.arm=hero.degMax-1
+
 	addText("Un "+mob.name+" apparait !")
 
 func writeDamage(i):
@@ -53,6 +64,9 @@ func checkIni():
 	if hero.ini<mob.ini:
 		addText(hero.name())
 		heroTurn=true
+		aide_setText("A. Def Z. Atk++ E. Atk")
+		hero_press=true
+		setKeys(true, true, true, false)
 	else:
 		addText(mob.name())
 		heroTurn=false
@@ -79,7 +93,12 @@ func setKeys(b0, b1, b2, b3):
 	hero_key3=b3
 
 func newTreasure():
-	treasure=items[Helper.rand_between(0, items.size()-1)].new(lvl)
+	var id=0
+
+	if lvl%10!=0:
+		id=Helper.rand_between(0, items.size()-1)
+
+	treasure=items[id].new(lvl)
 
 func todo():
 	match state:
@@ -103,31 +122,43 @@ func todo():
 			if !heroTurn:
 				mob_doAttack=true
 
-				addText(mob.name())
-				if mob.testAttack():
-					addText(" attaque, ")
+				if mob.testEd():
+					mob.remEd()
 
-					var b=true
+					if mob.testAttack():
+						addText(mob.name()+" attaque, ")
 
-					if hero.testAttack():
-						addText("mais "+hero.name+" se défend !")
-						b=false
+						var b=true
 
-					if hero_def:
-						disableDef()
-					
-					if b:
-						addText("et ")
-						writeDamage(hero.remPv( mob.attack() ))
+						if hero.testEd() and hero.testAttack():
+							hero.remEd()
+							addText("mais "+hero.name+" se défend !")
+							b=false
 
-						if hero.pv<1:
-							state+=2
-							return
+						if hero_def:
+							disableDef()
+						
+						if b:
+							addText("et ")
+							writeDamage(hero.remPv( mob.attack() ))
+
+							if hero.pv<1:
+								state+=2
+								return
+					else:
+						if hero_def:
+							disableDef()
+
+						addText(mob.name()+" rate son attaque.")
 				else:
 					if hero_def:
 						disableDef()
 
-					addText(" rate son attaque.")
+					addText(mob.name+" semble fatigué.")
+					mob_restore_ed=true
+
+				if !hero.testEd():
+					hero.setToEdMax()
 
 				heroTurn=true
 				aide_setText("A. Def Z. Atk++ E. Atk")
@@ -137,24 +168,34 @@ func todo():
 				hero_doAttack=true
 				heroTurn=false
 
-				if !hero_key0:
-					activeDef()
-					addText(hero.name+" prépare sa défense.")
-				else:
-					addText(hero.name())
-					if hero.testAttack():
-						var damage=hero.attack()
+				if hero.testEd():
+					hero.remEd()
 
-						if !hero_key1:
-							damage*=2
-
-						writeDamage(mob.remPv( damage ))
-
-						if mob.pv<=0:
-							state+=1
-							return
+					if !hero_key0:
+						activeDef()
+						addText(hero.name+" prépare sa défense.")
 					else:
-						addText(" rate son attaque.")
+						if hero.testAttack():
+							var damage=hero.attack()
+
+							if hero.testEd() and !hero_key1:
+								hero.remEd()
+								damage*=2
+
+							addText(hero.name())
+							writeDamage(mob.remPv( damage ))
+
+							if mob.pv<=0:
+								state+=1
+								return
+						else:
+							addText(hero.name()+" rate son attaque.")
+				else:
+					addText(hero.name()+ " semble fatigué.")
+
+				if mob_restore_ed:
+					mob.setToEdMax()
+					mob_restore_ed=false;
 
 			if mob_doAttack and hero_doAttack:
 				state+=3

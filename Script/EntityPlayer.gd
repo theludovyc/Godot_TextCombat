@@ -19,6 +19,9 @@ func reset_cc_bonus():
 
 func _init(s).(s, 10, 5):
 	reset_cc_bonus()
+
+	ed=5
+	edMax=5
 	pass
 
 func setDegMinMax(a, b):
