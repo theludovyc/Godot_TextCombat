@@ -33,7 +33,7 @@ var treasure
 
 var lvl=1
 
-var hero_def=false
+var hero_def=0
 
 var hero_restore_ed=false
 var mob_restore_ed=false
@@ -72,13 +72,24 @@ func checkIni():
 		heroTurn=false
 	addText(" attaque en premier.")
 
-func activeDef():
+func bonusDef():
 	hero.cc+=0.1
-	hero_def=true
+	hero_def=1
+
+func malusDef():
+	hero.cc-=0.1
+	hero_def=2
 
 func disableDef():
-	hero.cc-=0.1
-	hero_def=false
+	match hero_def:
+		0:
+			return
+		1:
+			hero.cc-=0.1
+			hero_def=0
+		2:
+			hero.cc+=0.1
+			hero_def=0
 
 func aide_addText(s):
 	$Label11.text+=s
@@ -122,43 +133,29 @@ func todo():
 			if !heroTurn:
 				mob_doAttack=true
 
-				if mob.testEd():
-					mob.remEd()
+				if mob.testAttack():
+					addText(mob.name()+" attaque, ")
 
-					if mob.testAttack():
-						addText(mob.name()+" attaque, ")
+					var b=true
 
-						var b=true
+					if hero.testAttack():
+						hero.remEd()
+						addText("mais "+hero.name+" se défend !")
+						b=false
 
-						if hero.testEd() and hero.testAttack():
-							hero.remEd()
-							addText("mais "+hero.name+" se défend !")
-							b=false
+					disableDef()
+					
+					if b:
+						addText("et ")
+						writeDamage(hero.remPv( mob.attack() ))
 
-						if hero_def:
-							disableDef()
-						
-						if b:
-							addText("et ")
-							writeDamage(hero.remPv( mob.attack() ))
-
-							if hero.pv<1:
-								state+=2
-								return
-					else:
-						if hero_def:
-							disableDef()
-
-						addText(mob.name()+" rate son attaque.")
+						if hero.pv<1:
+							state+=2
+							return
 				else:
-					if hero_def:
-						disableDef()
+					disableDef()
 
-					addText(mob.name+" semble fatigué.")
-					mob_restore_ed=true
-
-				if !hero.testEd():
-					hero.setToEdMax()
+					addText(mob.name()+" rate son attaque.")
 
 				heroTurn=true
 				aide_setText("A. Def Z. Atk++ E. Atk")
@@ -168,38 +165,31 @@ func todo():
 				hero_doAttack=true
 				heroTurn=false
 
-				if hero.testEd():
-					hero.remEd()
-
-					if !hero_key0:
-						activeDef()
-						addText(hero.name+" prépare sa défense.")
-					else:
-						if hero.testAttack():
-							var damage=hero.attack()
-
-							if hero.testEd() and !hero_key1:
-								hero.remEd()
-								damage*=2
-
-							addText(hero.name())
-							writeDamage(mob.remPv( damage ))
-
-							if mob.pv<=0:
-								state+=1
-								return
-						else:
-							addText(hero.name()+" rate son attaque.")
+				if !hero_key0:
+					bonusDef()
+					addText(hero.name+" prépare sa défense.")
 				else:
-					addText(hero.name()+ " semble fatigué.")
+					if hero.testAttack():
+						var damage=hero.attack()
 
-				if mob_restore_ed:
-					mob.setToEdMax()
-					mob_restore_ed=false;
+						if !hero_key1:
+							malusDef()
+							damage*=2
+
+						addText(hero.name())
+						writeDamage(mob.remPv( damage ))
+
+						if mob.pv<=0:
+							state+=1
+							return
+					else:
+						addText(hero.name()+" rate son attaque.")
 
 			if mob_doAttack and hero_doAttack:
 				state+=3
 		4:
+			disableDef()
+			
 			addLine()
 			addText(mob.name+" est mort.")
 			state+=3

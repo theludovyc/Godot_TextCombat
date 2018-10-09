@@ -33,7 +33,7 @@ func name():
 	if arm>0:
 		s+=", "+str(arm)
 		
-	return s+", "+str(ed)+")"
+	return s+")"
 
 func setToPvMax():
 	pv=pvMax
