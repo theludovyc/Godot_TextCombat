@@ -21,11 +21,8 @@ var ini=0
 var ed=0
 var edMax=0
 
-func _init(s, i, i2):
+func _init(s):
 	name=s
-	pvMax=i
-	pv=i
-	ini=i2
 
 func name():
 	var s=name+"("+str(pv)

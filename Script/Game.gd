@@ -1,7 +1,7 @@
 extends Node
 
 var EntityPlayer=preload("EntityPlayer.gd")
-var Gobelin=preload("Gobelin.gd")
+var Monster=preload("EntityMonster.gd")
 var Boss=preload("EntityBoss.gd")
 
 var items=[preload("ItemPotionVie.gd"), 
@@ -50,7 +50,7 @@ func apparation():
 	if(lvl%10==0):
 		mob=Boss.new(lvl)
 	else:
-		mob=Gobelin.new(lvl)
+		mob=Monster.new(lvl)
 
 	if mob.arm>=hero.degMax:
 		mob.arm=hero.degMax-1
@@ -139,7 +139,6 @@ func todo():
 					var b=true
 
 					if hero.testAttack():
-						hero.remEd()
 						addText("mais "+hero.name+" se défend !")
 						b=false
 

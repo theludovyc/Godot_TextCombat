@@ -1,14 +1,15 @@
 extends "Entity.gd"
 
-func _init(i).("Boss", 0, 6):
-	cc=i/100.0;
-
+func _init(i).("Boss"):
 	pv=i
+	pvMax=i
+
 	arm=i
 
-	ed=5
-	edMax=5
+	cc=i/100.0;
 
 	degMin=i
 	degMax=i
+
+	ini=10
 	pass

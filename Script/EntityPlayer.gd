@@ -17,11 +17,13 @@ var ch=1
 func reset_cc_bonus():
 	cc_bonus=(1-cc)*(ag/100.0)
 
-func _init(s).(s, 10, 5):
-	reset_cc_bonus()
+func _init(s).(s):
+	pv=10
+	pvMax=10
 
-	ed=5
-	edMax=5
+	ini=5
+
+	reset_cc_bonus()
 	pass
 
 func setDegMinMax(a, b):
