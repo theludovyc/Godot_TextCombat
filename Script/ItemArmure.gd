@@ -1,6 +1,7 @@
 extends "ItemEquipe.gd"
 
 func _init(i).(i, "Armure", false):
+	item_var/=2
 	pass
 
 func use(e):
