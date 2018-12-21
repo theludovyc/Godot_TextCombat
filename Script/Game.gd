@@ -52,10 +52,7 @@ func apparation():
 	else:
 		mob=Monster.new(lvl)
 
-	if mob.arm>=hero.degMax:
-		mob.arm=hero.degMax-1
-
-	addText("Un "+mob.name+" apparait !")
+	addText("Un "+mob.name()+" apparait !")
 
 func writeDamage(i):
 	addText(" inflige "+str(i)+" dégat(s).")
@@ -116,8 +113,6 @@ func todo():
 		0:
 			addLine()
 
-			hero.pvMax+=1
-
 			addText("--- "+hero.name()+" ouvre une porte("+str(lvl)+").")
 			state+=1
 		1:
@@ -166,6 +161,7 @@ func todo():
 
 				if !hero_key0:
 					bonusDef()
+					hero.setToArmMax()
 					addText(hero.name+" prépare sa défense.")
 				else:
 					if hero.testAttack():
@@ -240,6 +236,8 @@ func todo():
 			state+=1
 
 		10:
+			hero.pvMax+=1
+
 			if !hero_key0:
 				addLine()
 				treasure.use(hero)
@@ -258,6 +256,7 @@ func todo():
 
 			mob_doAttack=false
 			hero_doAttack=false
+			hero.setToArmMax()
 			lvl+=1
 			state=0
 

@@ -4,9 +4,12 @@ func _init(i).("Monstre"):
 	pv=i
 	pvMax=i
 
-	arm=Helper.rand_between(i/3, i/2)
+	armMax=Helper.rand_between(i*0.25, i*0.75)
+	arm=armMax
 
 	cc=Helper.rand_between(25, 75)/100.0
+
+	ini=Helper.rand_between(1,10)
 
 	degMax=i
 

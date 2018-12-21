@@ -6,6 +6,7 @@ var pvMax=0
 
 #armure
 var arm=0
+var armMax=0
 
 #capacite de combat
 var cc=0.5
@@ -40,16 +41,29 @@ func addPv(i):
 	if pv>pvMax:
 		pv=pvMax
 
+func setToArmMax():
+	arm=armMax
+
 func remPv(i):
 	if arm>0:
-		if i>arm:
-			i-=arm
-			pv-=i
-			return i
-		return 0
+		if i==arm:
+			arm=0
+			return 0
+		else:
+			if i>arm:
+				i-=arm
+				pv-=i
+				arm=0
+				return i
+			
+			arm-=i
+			return 0
 	
 	pv-=i
 	return i
+
+func getDifDegMaxMin():
+	return degMax-degMin
 
 func setToEdMax():
 	ed=edMax
