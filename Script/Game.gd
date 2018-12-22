@@ -74,7 +74,7 @@ func bonusDef():
 	hero_def=1
 
 func malusDef():
-	hero.cc-=0.1
+	hero.cc-=0.4
 	hero_def=2
 
 func disableDef():
@@ -85,7 +85,7 @@ func disableDef():
 			hero.cc-=0.1
 			hero_def=0
 		2:
-			hero.cc+=0.1
+			hero.cc+=0.4
 			hero_def=0
 
 func aide_addText(s):
@@ -266,6 +266,7 @@ func _ready():
 	labels=[$Label10, $Label9, $Label8, $Label7, $Label6, $Label5, $Label4, $Label3, $Label2, $Label]
 
 	addText("--- "+hero.name()+" ouvre une porte.")
+
 	state=1
 
 func _process(delta):

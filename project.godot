@@ -20,7 +20,7 @@ Helper="*res://Script/Helper.gd"
 
 [display]
 
-window/size/width=570
+window/size/width=632
 window/size/height=400
 window/size/resizable=false
 
