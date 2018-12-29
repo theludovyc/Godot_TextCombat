@@ -1,6 +1,8 @@
 extends "Entity.gd"
 
-func _init(i).("Monstre"):
+func initMonster(i):
+	name="Monstre"
+
 	pv=i
 	pvMax=i
 
@@ -19,3 +21,21 @@ func _init(i).("Monstre"):
 
 	degMin=1
 	pass
+
+func initBoss(i):
+	name="Boss"
+
+	pv=i
+	pvMax=i
+
+	armMax=int(i*0.75)
+	arm=armMax
+
+	cc=i/100.0
+
+	degMin=i
+	degMax=i
+
+	ini=1
+	pass
+	

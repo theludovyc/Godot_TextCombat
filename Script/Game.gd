@@ -1,8 +1,7 @@
 extends Node
 
-var EntityPlayer=preload("EntityPlayer.gd")
+var Player=preload("EntityPlayer.gd")
 var Monster=preload("EntityMonster.gd")
-var Boss=preload("EntityBoss.gd")
 
 var items=[preload("ItemPotionVie.gd"), 
 preload("ItemArmure.gd"),
@@ -10,8 +9,8 @@ preload("ItemEpee.gd"),
 preload("ItemCeinture.gd"),
 preload("ItemBotte.gd")]
 
-var hero=EntityPlayer.new("Héro")
-var mob
+var hero=Player.new()
+var mob=Monster.new()
 
 var labels
 var labels_index=0
@@ -46,11 +45,14 @@ func addLine():
 func addText(s):
 	labels[0].text+=s
 
+func openDoor():
+	addText("--- "+hero.name()+" ouvre une porte("+str(lvl)+").")
+
 func apparation():
 	if(lvl%10==0):
-		mob=Boss.new(lvl)
+		mob.initBoss(lvl)
 	else:
-		mob=Monster.new(lvl)
+		mob.initMonster(lvl)
 
 	addText("Un "+mob.name()+" apparait !")
 
@@ -112,8 +114,7 @@ func todo():
 	match state:
 		0:
 			addLine()
-
-			addText("--- "+hero.name()+" ouvre une porte("+str(lvl)+").")
+			openDoor()
 			state+=1
 		1:
 			addLine()
@@ -187,6 +188,11 @@ func todo():
 			
 			addLine()
 			addText(mob.name+" est mort.")
+
+			if(lvl==100):
+				state=16
+				return
+			
 			state+=3
 
 		5:
@@ -208,7 +214,13 @@ func todo():
 
 		8:
 			addLine()
-			addText("Fin de la partie, merci d'avoir jouer !")
+			addText("Fin de la partie, merci d'avoir joué !")
+			aide_setText("A. Prier Z. Abandonner")
+
+			hero_press=true
+			setKeys(true, true, false, false)
+
+			state+=3
 
 		9:
 			addLine()
@@ -260,12 +272,75 @@ func todo():
 			lvl+=1
 			state=0
 
+		11:
+			if !hero_key0:
+				addLine()
+				addText("Un ange a entendu votre prière...")
+				state+=1
+			elif !hero_key1:
+				get_tree().quit()
+
+		12:
+			addLine()
+			addText("Il accepte de vous réanimer...")
+			state+=1
+
+		13:
+			addLine()
+			addText("En échange de votre équipement...")
+
+			state+=1
+
+		14:
+			addLine()
+			addText("Et si vous prenez un nouveau départ...")
+
+			aide_setText("A. Accepter Z. Refuser")
+
+			hero_press=true
+			setKeys(true, true, false, false)
+
+			state+=1
+
+		15:
+			if !hero_key0:
+				randomize()
+
+				lvl=1
+
+				hero._init()
+
+				addLine()
+				openDoor()
+
+				state=1
+			elif !hero_key1:
+				get_tree().quit()
+
+		16:
+			addLine()
+			addText("Vous êtes venu à bout du dernier Boss...")
+			state+=1
+
+		17:
+			addLine()
+			addText("Félicitation !!!")
+			state+=1
+
+		18:
+			addLine()
+			addText("Fin de la partie, merci d'avoir joué !")
+			aide_setText("A. Recommencer Z. Quitter")
+			hero_press=true
+			setKeys(true, true, false, false)
+			state=15
+
 func _ready():
 	randomize()
 
 	labels=[$Label10, $Label9, $Label8, $Label7, $Label6, $Label5, $Label4, $Label3, $Label2, $Label]
 
-	addText("--- "+hero.name()+" ouvre une porte.")
+	openDoor()
 
 	state=1
 

@@ -1,29 +1,43 @@
 extends "Entity.gd"
 
 #force
-var fr=1
+var fr
 
 #agilite
-var ag=1
+var ag
 
 #intel
-var it=1
+var it
 
-var cc_bonus=0.0
-
-#chance
-var ch=1
+var cc_bonus
 
 func reset_cc_bonus():
 	cc_bonus=(1-cc)*(ag/100.0)
 
-func _init(s).(s):
+func initCaracs():
 	pv=10
 	pvMax=10
 
+	arm=0
+	armMax=0
+
+	cc=0.5
+
+	degMin=1
+	degMax=1	
+
 	ini=5
 
+	fr=1
+	ag=1
+
 	reset_cc_bonus()
+	pass
+
+func _init():
+	name="Héro"
+
+	initCaracs()
 	pass
 
 func setDegMinMax(a, b):

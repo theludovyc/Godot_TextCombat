@@ -1,29 +1,22 @@
-var name=""
+var name
 
 #point de vie
-var pv=0
-var pvMax=0
+var pv
+var pvMax
 
 #armure
-var arm=0
-var armMax=0
+var arm
+var armMax
 
 #capacite de combat
-var cc=0.5
+var cc
 
 #degat
-var degMin=1
-var degMax=1
+var degMin
+var degMax
 
 #initiative
-var ini=0
-
-#endurance
-var ed=0
-var edMax=0
-
-func _init(s):
-	name=s
+var ini
 
 func name():
 	var s=name+"("+str(pv)
@@ -65,22 +58,10 @@ func remPv(i):
 func getDifDegMaxMin():
 	return degMax-degMin
 
-func setToEdMax():
-	ed=edMax
-
-func testEd():
-	if ed>0:
-		return true
-	return false
-
 func testAttack():
 	if randf()<=cc:
 		return true
 	return false
-
-func remEd():
-	if ed>0:
-		ed-=1
 
 func attack():
 	return Helper.rand_between(degMin, degMax)
